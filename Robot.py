@@ -19,13 +19,12 @@ def Allowed(url):
         if (parsed.port):
             port = ":" + str(parsed.port)
     except ValueError:
-        print "ValueError: ", url
+        print ("ValueError: " + url)
 
     try:
         roboturl = parsed.scheme + "://" + parsed.hostname + port + "/robots.txt"
     except TypeError:
-        print parsed
-        raw_input()
+        print (parsed)
     if roboturl not in RuleDict:
         RuleDict[roboturl] = robotparser.RobotFileParser(roboturl)
         try:
@@ -37,7 +36,7 @@ def Allowed(url):
     try:
         return RuleDict[roboturl].can_fetch(Config.UserAgentString, url)
     except KeyError:
-        print "Keyerror: ", url
+        print ("Keyerror: " + url)
         return True
 
 

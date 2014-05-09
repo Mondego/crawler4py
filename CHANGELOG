@@ -1,0 +1,12 @@
+#############################
+crawler4py
+
+ENTRY 1
+
+* Shifted the extraction of next links to config. This supports greater flexibility in type of data. Case example: The parser can be used to fetch data from API iteratively by getting the next link correctly from the data previously got.
+* Added timestamp messages
+* Made it less python 2 specific. Syntax should work for python 3 as well. Not tested.
+
+-- Rohan Achar - May 9, 2014 - 10:15
+
+#############################

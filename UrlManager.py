@@ -120,7 +120,7 @@ class UrlManager:
         try:
             return (True, self.Output.get(True, Config.OutBufferTimeOut))
         except Empty:
-            print "No value in Output buffer for " , Config.OutBufferTimeOut, " secs, dumping working set"
-            print self.Working
+            print ("No value in Output buffer for " + str(Config.OutBufferTimeOut) + " secs, dumping working set")
+            print (self.Working)
             return (False,)
         

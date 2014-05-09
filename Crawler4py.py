@@ -6,6 +6,6 @@ import CrawlManager
 
 crawler = CrawlManager.CrawlManager()
 
-print crawler.StartCrawling()
+print (crawler.StartCrawling())
 
 exit(0)

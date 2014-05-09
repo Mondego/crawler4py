@@ -1,15 +1,16 @@
 crawler4py
 ==========
-
 A web crawler in Python
 
-==========
 Dependency List
 ==========
-1. NLTK : http://www.nltk.org/install.html (You can remove this dependency in Config.py if you want)
-2. Lxml : https://pypi.python.org/pypi/lxml (Required)
+1. NLTK : http://www.nltk.org/install.html : html clean up
+2. Lxml : https://pypi.python.org/pypi/lxml : html document parsing
+(You can remove this dependency in Config.py if you want)
+3. Python 2.7+ (The above dependencies work on this version of python.
+               You can try it on Python 3 too. But it has not been tested)
 
-==========
+
 Config Variables
 ==========
 
@@ -47,7 +48,7 @@ MaxQueueSize : Max size of output queue. If the HandleData function is slow, the
 
 Seeds : Initial set of urls to start crawling from
 
-==========
+
 Config Functions
 ==========
 HandleData 
@@ -70,13 +71,20 @@ GetTextData
   Desc : Function to clean up html raw data and get the text from it. Keep it small. Not thread safe, returns an object that will go into the parsedData["text"] field for HandleData function above
   return : str
 
+ExtractNextLinks
+  params : url : base url where the data was got from : str
+           rawData : rawData obtained from the url : str
+           outputLinks : the list of links that have been extracted from the rawData : list
+  Desc : Function to extract the next links to iterate over. No need to validate the links.They get validated at the ValudUrl function when added to the frontier Add the output links to the outputLinks parameter (has to be a list). Return Bool signifying success of extracting the links. rawData for url will not be stored if this function returns False. If there are no links but the rawData is still valid and has to be saved return True    Keep this default implementation if you need all the html links from rawData
+  return : bool
 
-==========
+
+
 What to write
 ==========
 Modify the above variables and functions in Config.py
 
-==========
+
 How to run it
 ==========
 python Crawler4py.py

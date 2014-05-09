@@ -9,12 +9,9 @@ import socket
 import Config
 
 from threading import *
-from lxml import html,etree
-from urlparse import urlparse,parse_qs
 
 #url is assumed to be crawlable
 def FetchUrl(url, depth, urlManager, retry = 0):
-    print(url)
     urlreq = urllib2.Request(url, None, {"User-Agent" : Config.UserAgentString})
     try:    
         
@@ -34,22 +31,15 @@ def FetchUrl(url, depth, urlManager, retry = 0):
     except socket.error:
         if (retry == Config.MaxRetryDownloadOnFail):
             return False
-        print "Retrying ", url, " ", retry + 1, " time"
+        print ("Retrying " + url + " " + str(retry + 1) + " time")
         return FetchUrl(url, depth, urlManager, retry + 1)
     
 def ProcessUrlData(url, htmlData, depth, urlManager):
     textData = Config.GetTextData(htmlData)
-    try:
-        htmlParse = html.document_fromstring(htmlData)
-        htmlParse.make_links_absolute(url)
-    except etree.ParserError:
-        return False
-    except etree.XMLSyntaxError:
-        return False
-    
-    urlManager.AddOutput({"html": htmlData, "text": textData, "url": url})
-    for element, attribute, link, pos in htmlParse.iterlinks():
-        urlManager.AddToFrontier(link, depth + 1)
-    
-    return True
-    
+    links = []
+    if (Config.ExtractNextLinks(url, htmlData, links)):
+        urlManager.AddOutput({"html": htmlData, "text": textData, "url": url})
+        for link in links:
+            urlManager.AddToFrontier(link, depth + 1)
+        return True
+    return False    

@@ -2,8 +2,9 @@
 @Author: Rohan Achar ra.rohan@gmail.com
 '''
 
-import re, hashlib, nltk
+import re, nltk
 from urlparse import urlparse,parse_qs
+from lxml import html,etree
 
 #Number of Url Data Fetching Threads Allowed
 MaxWorkerThreads = 8
@@ -59,6 +60,7 @@ def HandleData(parsedData):
     '''Function to handle url data. Guaranteed to be Thread safe.
     parsedData = {"url" : "url", "text" : "text data from html", "html" : "raw html data"}
     Advisable to make this function light. Data can be massaged later. Storing data probably is more important'''
+    print (parsedData["url"])
     pass
 
 def AllowedSchemes(scheme):
@@ -73,9 +75,27 @@ def ValidUrl(url):
             and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico|png|tiff?|mid|mp2|mp3|mp4)$", parsed.path)
 
     except TypeError:
-        print "TypeError for ", parsed
+        print ("TypeError for ", parsed)
 
 def GetTextData(htmlData):
     '''Function to clean up html raw data and get the text from it. Keep it small.
     Not thread safe, returns an object that will go into the parsedData["text"] field for HandleData function above'''
     return nltk.clean_html(htmlData)
+
+def ExtractNextLinks(url, rawData, outputLinks):
+    '''Function to extract the next links to iterate over. No need to validate the links. They get validated at the ValudUrl function when added to the frontier
+    Add the output links to the outputLinks parameter (has to be a list). Return Bool signifying success of extracting the links.
+    rawData for url will not be stored if this function returns False. If there are no links but the rawData is still valid and has to be saved return True
+    Keep this default implementation if you need all the html links from rawData'''
+
+    try:
+        htmlParse = html.document_fromstring(rawData)
+        htmlParse.make_links_absolute(url)
+    except etree.ParserError:
+        return False
+    except etree.XMLSyntaxError:
+        return False
+    
+    for element, attribute, link, pos in htmlParse.iterlinks():
+        outputLinks.append(link)
+    return True

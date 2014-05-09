@@ -19,11 +19,11 @@ class CrawlManager:
         
 
     def StartCrawling(self):
+        print ("Timestamp of start: " + time.strftime("%c"))
         outputWriter = Thread(target = self.__WriteDataOut, args = ())
         outputWriter.start()
         try:
             workerTry = self.__GetFreeWorker()
-            print workerTry
             while workerTry[0]:
                 urlTry = None
                 retryCount = 0
@@ -43,22 +43,22 @@ class CrawlManager:
                 time.sleep(Config.PolitenessDelay/1000)
                 workerTry = self.__GetFreeWorker()
 
-            print "Waiting for Output buffer to clear"
+            print ("Waiting for Output buffer to clear")
             outputWriter.join()
-            print "Waiting for all threads to end." 
-            print "Timestamp of message: " + time.strftime("%c")
-            print "Please close manually if next message doesnt appear for long time"
+            print ("Waiting for all threads to end." )
+            print ("Timestamp of message: " + time.strftime("%c"))
+            print ("Please close manually if next message doesnt appear for long time")
 
             for key in range(Config.MaxWorkerThreads):
                 if key in self.workersDict:
                     self.workersDict[key].join()
         
         except KeyboardInterrupt:
-            print "Exitting, Waiting for Output buffer to clear so that data is not lost"
+            print ("Exitting, Waiting for Output buffer to clear so that data is not lost")
             outputWriter.join()
 
 
-        print "All Threads cleared"
+        print ("All Threads cleared")
         return "Crawler Exiting"
 
     
