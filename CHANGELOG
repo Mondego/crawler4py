@@ -1,6 +1,18 @@
 #############################
 crawler4py
 
+ENTRY 2
+
+* Changed the Seed from attribute to method so that more preparation work can be done.
+* Allowed Ignore Robot rules config entry.
+* Url encoded to utf-8 to avoid unicodeerrors.
+* Support for Basic Authentication.
+
+-- Rohan Achar - May 9, 2014 - 10:15
+
+#############################
+crawler4py
+
 ENTRY 1
 
 * Shifted the extraction of next links to config. This supports greater flexibility in type of data. Case example: The parser can be used to fetch data from API iteratively by getting the next link correctly from the data previously got.

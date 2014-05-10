@@ -52,9 +52,13 @@ MaxPageSize = 1048576
 #Disadvantage of setting > 0: Slows down the crawling.
 MaxQueueSize = 0
 
-#Initial set of urls to start crawling from
-Seeds = ["Starting Url 1", "Starting Url2", "etc"]
+#This ignores the rules at robot.txt. Be very careful with this. Only make it True with permission of the host/API pulling that does not need robot rules.
+IgnoreRobotRule = False
 
+
+def GetSeeds():
+    '''Returns the first set of urls to start crawling from'''
+    return ["Sample Url 1", "Sample Url 2", "Etc"]
 
 def HandleData(parsedData):
     '''Function to handle url data. Guaranteed to be Thread safe.
@@ -99,3 +103,7 @@ def ExtractNextLinks(url, rawData, outputLinks):
     for element, attribute, link, pos in htmlParse.iterlinks():
         outputLinks.append(link)
     return True
+
+def GetAuthenticationData():
+    ''' Function that returns dict(top_level_url : tuple(username, password)) for basic authentication purposes'''
+    return {}

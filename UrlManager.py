@@ -39,7 +39,7 @@ class UrlManager:
 
             self.ShelveObj = shelve.open(Config.PersistentFile)
 
-        for url in Config.Seeds:
+        for url in Config.GetSeeds():
             self.AddToFrontier(url, 0)
         
         return
@@ -56,7 +56,7 @@ class UrlManager:
                     pathparts = pathparts[:-1]
             parsedset = parsedset._replace(path = ("/".join(pathparts)).rstrip("/"))
             url = urlparse.urlunparse(parsedset)
-        return url.rstrip("/")
+        return url.rstrip("/").encode("utf-8")
 
     def __Valid(self, url, depth):
         parsedset = urlparse.urlparse(url)

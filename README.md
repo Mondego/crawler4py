@@ -45,11 +45,16 @@ MaxQueueSize : Max size of output queue. If the HandleData function is slow, the
                Advantages of setting > 0: Fetch url waits for the buffer to become free when its full. If crawler crashes max of this size output is lost.
                Disadvantage of setting > 0: Slows down the crawling.
 
-Seeds : Initial set of urls to start crawling from
+IgnoreRobotRule : This ignores the rules at robot.txt. Be very careful with this. Only make it True with permission of the host/API pulling that does not need robot rules.
 
 
 Config Functions
 ==========
+GetSeeds [
+  params : None
+  Desc : Returns the first set of urls to start crawling from
+  return : list(str) : list of urls ]
+
 HandleData [
   params : parsedData : parsedData = {"url" : "url", "text" : "text data from html", "html" : "raw html data"}
   Desc : Function to handle url data. Guaranteed to be Thread safe. Advisable to make this function light. Data can be massaged later. Storing data probably is more important
@@ -77,7 +82,10 @@ ExtractNextLinks [
   Desc : Function to extract the next links to iterate over. No need to validate the links.They get validated at the ValudUrl function when added to the frontier Add the output links to the outputLinks parameter (has to be a list). Return Bool signifying success of extracting the links. rawData for url will not be stored if this function returns False. If there are no links but the rawData is still valid and has to be saved return True    Keep this default implementation if you need all the html links from rawData
   return : bool ]
 
-
+GetAuthenticationData [
+  params : None
+  Desc : Function that returns dict(top_level_url : tuple(username, password)) for basic authentication purposes
+  return : dict(top_level_url : tuple(username, password)) ]
 
 What to write
 ==========
