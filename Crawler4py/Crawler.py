@@ -5,15 +5,17 @@
 import time
 
 from threading import *
-from sets import Set
 
-import UrlManager, Config, Fetcher
+from Crawler4py import UrlManager, Fetcher
 
-class CrawlManager:
-    def __init__(self):
-        self.urlManager = UrlManager.UrlManager()
-        self.freeworkers = Set(range(Config.MaxWorkerThreads))
-        self.busyworkers = Set()
+class Crawler:
+    def __init__(self, config):
+        config.ValidateConfig()
+        self.config = config
+        self.urlManager = UrlManager.UrlManager(config)
+        self.fetcher = Fetcher.Fetcher(config)
+        self.freeworkers = set(range(self.config.MaxWorkerThreads))
+        self.busyworkers = set()
         self.workersLock = Lock()
         self.workersDict = {}
         
@@ -34,13 +36,13 @@ class CrawlManager:
 
                     time.sleep(0.1)
                     retryCount += 1
-                    if (retryCount >= Config.FrontierTimeOut / 0.1):
+                    if (retryCount >= self.config.FrontierTimeOut / 0.1):
                         return "Exit, No More urls in Frontier"
 
                 workerThread = Thread(target = self.__StartWorker, args = (workerTry[1], urlTry[1], urlTry[2]))
                 self.workersDict[workerTry[1]] = workerThread
                 workerThread.start()
-                time.sleep(Config.PolitenessDelay/1000)
+                time.sleep(self.config.PolitenessDelay/1000)
                 workerTry = self.__GetFreeWorker()
 
             print ("Waiting for Output buffer to clear")
@@ -49,7 +51,7 @@ class CrawlManager:
             print ("Timestamp of message: " + time.strftime("%c"))
             print ("Please close manually if next message doesnt appear for long time")
 
-            for key in range(Config.MaxWorkerThreads):
+            for key in range(self.config.MaxWorkerThreads):
                 if key in self.workersDict:
                     self.workersDict[key].join()
         
@@ -71,7 +73,7 @@ class CrawlManager:
 
             time.sleep(0.1)
             retryCount += 1
-            if (retryCount >= Config.WorkerTimeOut / 0.1):
+            if (retryCount >= self.config.WorkerTimeOut / 0.1):
                 return False, None
 
     def __StartWorker(self, id, url, depth):
@@ -79,7 +81,7 @@ class CrawlManager:
             self.busyworkers.add(id)
 
         try:
-            Fetcher.FetchUrl(url, depth, self.urlManager)
+            self.fetcher.FetchUrl(url, depth, self.urlManager)
             self.urlManager.MarkUrlAsDone(url)
         finally:
             with self.workersLock:
@@ -92,6 +94,6 @@ class CrawlManager:
     def __WriteDataOut(self):
         dataTry = self.urlManager.GetOutput()
         while dataTry[0]:
-            Config.HandleData(dataTry[1])
+            self.config.HandleData(dataTry[1])
             dataTry = self.urlManager.GetOutput()
 

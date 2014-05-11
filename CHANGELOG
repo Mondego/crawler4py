@@ -1,6 +1,17 @@
 #############################
 crawler4py
 
+ENTRY 3
+
+* Made project into a package and Config an abstract class.
+* Changed from deprecated sets.Set() to built-in set()
+* Made changes to make it cross compatible with both python 2 and python 3
+* Changed frontier to an ordered set and allowed for depth first or breadth first traversals.
+
+-- Rohan Achar - May 11, 2014 - 9:00AM
+#############################
+crawler4py
+
 ENTRY 2
 
 * Changed the Seed from attribute to method so that more preparation work can be done.
@@ -8,7 +19,7 @@ ENTRY 2
 * Url encoded to utf-8 to avoid unicodeerrors.
 * Support for Basic Authentication.
 
--- Rohan Achar - May 9, 2014 - 10:15
+-- Rohan Achar - May 9, 2014 - 10:15PM
 
 #############################
 crawler4py
@@ -19,6 +30,6 @@ ENTRY 1
 * Added timestamp messages
 * Made it less python 2 specific. Syntax should work for python 3 as well. Not tested.
 
--- Rohan Achar - May 9, 2014 - 10:15
+-- Rohan Achar - May 9, 2014 - 10:15AM
 
 #############################

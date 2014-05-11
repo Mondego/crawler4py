@@ -6,8 +6,8 @@ Dependency List
 ==========
 1. NLTK : http://www.nltk.org/install.html : html clean up (Can remove in Config)
 2. Lxml : https://pypi.python.org/pypi/lxml : html document parsing (Can remove in Config)
-3. Python 2.7+ (The above dependencies work on this version of python.
-               You can try it on Python 3 too. But it has not been tested)
+3. Python 2.6+ (The above dependencies work on this version of python.
+               You can try it on Python 3 too if you do not use the above dependencies. Tested)
 
 
 Config Variables
@@ -23,7 +23,7 @@ OutBufferTimeOut : Timeout(Seconds) for getting data from the output queue
 
 UrlFetchTimeOut : Timeout(Seconds) for getting data from a url
 
-UserAgentString : The User Agent String that this crawler is going to identify itself as. http://tools.ietf.org/html/rfc2616#section-14.43
+UserAgentString : The User Agent String that this crawler is going to identify itself as. http://tools.ietf.org/html/rfc2616#section-14.43 : HAVE TO DEFINE IN DERIVED CLASS
 
 Resumable : To allow resume of fetching from last point of closure. Set to False to always restart from seed set of urls.
 
@@ -47,17 +47,18 @@ MaxQueueSize : Max size of output queue. If the HandleData function is slow, the
 
 IgnoreRobotRule : This ignores the rules at robot.txt. Be very careful with this. Only make it True with permission of the host/API pulling that does not need robot rules.
 
+self.DepthFirstTraversal : This sets the mode of traversal: False -> Breadth First, True -> Depth First.
 
 Config Functions
 ==========
 GetSeeds [
   params : None
-  Desc : Returns the first set of urls to start crawling from
+  Desc : Returns the first set of urls to start crawling from. HAVE TO DEFINE IN DERIVED CLASS
   return : list(str) : list of urls ]
 
 HandleData [
   params : parsedData : parsedData = {"url" : "url", "text" : "text data from html", "html" : "raw html data"}
-  Desc : Function to handle url data. Guaranteed to be Thread safe. Advisable to make this function light. Data can be massaged later. Storing data probably is more important
+  Desc : Function to handle url data. Guaranteed to be Thread safe. Advisable to make this function light. Data can be massaged later. Storing data probably is more important.  HAVE TO DEFINE IN DERIVED CLASS
   return : None ]
 
 AllowedSchemes [
@@ -67,7 +68,7 @@ AllowedSchemes [
 
 ValidUrl [
   params : url : url to check : str
-  Desc : Function to determine if the url is a valid url that should be fetched or not.
+  Desc : Function to determine if the url is a valid url that should be fetched or not. Default base class implementation returns True for all urls.
   return : bool (True if url is valid) ]
     
 GetTextData [
@@ -89,10 +90,11 @@ GetAuthenticationData [
 
 What to write
 ==========
-Modify the above variables and functions in Config.py
-
-
-How to run it
-==========
-python Crawler4py.py
-
+1. Make a config file say MyCrawlerConfig.py at the same level as the Crawler4py folder (Not in that folder)
+2. In that file Inherit from Crawler4py.Config.
+3. In the constructor define at least UserAgentString. You can set more of the above attributes here
+4. define at least 2 functions: GetSeeds, HandleData. You can override more of the above functions here
+5. In your main python file. from <Filename> import <Config Class name>
+6. from Crawler4py.Crawler import Crawler
+7. crawler = Crawler(<Config Class Name>())
+8. crawler.StartCrawling()

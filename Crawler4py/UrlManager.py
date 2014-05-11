@@ -2,20 +2,28 @@
 @Author: Rohan Achar ra.rohan@gmail.com
 '''
 
-import os, shelve, urlparse, re
+import os, shelve, re
+try:
+    import urlparse
+    from Queue import Queue, Empty, Full
+except ImportError:
+    import urllib.parse as urlparse
+    from queue import Queue, Empty, Full
 
-from Queue import Queue, Empty, Full
-from sets import Set
+
 from threading import Lock
 
-import Robot, Config
+from Crawler4py import Robot
+from Crawler4py.OrderedSet import OrderedSet
 
 class UrlManager:
-    def __init__(self):
-        self.Frontier = Set()
-        self.Working = Set()
-        self.Done = Set()
-        self.Output = Queue(Config.MaxQueueSize)
+    def __init__(self, config):
+        self.config = config
+        self.robot = Robot.Robot(self.config)
+        self.Frontier = OrderedSet()
+        self.Working = set()
+        self.Done = set()
+        self.Output = Queue(self.config.MaxQueueSize)
         self.FrontierLock = Lock()
         self.WorkingLock = Lock()
         self.DoneLock = Lock()
@@ -27,19 +35,19 @@ class UrlManager:
 
     def __Init(self):
         self.ShelveObj = None
-        if Config.Resumable:
-            if (os.access(Config.PersistentFile, os.F_OK)):
-                self.ShelveObj = shelve.open(Config.PersistentFile)
+        if self.config.Resumable:
+            if (os.access(self.config.PersistentFile, os.F_OK)):
+                self.ShelveObj = shelve.open(self.config.PersistentFile)
                 keys = self.ShelveObj.keys()
                 if len(keys) > 0:
                     for key in keys:
                         if not self.ShelveObj[key][0]:
-                            self.Frontier.add((key, self.ShelveObj[key][1]))
+                            self.Frontier.add((key.decode("utf-8"), self.ShelveObj[key][1]))
                     return
 
-            self.ShelveObj = shelve.open(Config.PersistentFile)
+            self.ShelveObj = shelve.open(self.config.PersistentFile)
 
-        for url in Config.GetSeeds():
+        for url in self.config.GetSeeds():
             self.AddToFrontier(url, 0)
         
         return
@@ -56,18 +64,21 @@ class UrlManager:
                     pathparts = pathparts[:-1]
             parsedset = parsedset._replace(path = ("/".join(pathparts)).rstrip("/"))
             url = urlparse.urlunparse(parsedset)
-        return url.rstrip("/").encode("utf-8")
+        return url.rstrip("/")
 
     def __Valid(self, url, depth):
         parsedset = urlparse.urlparse(url)
-        return Config.AllowedSchemes(parsedset.scheme)\
-            and Robot.Allowed(url)\
-            and Config.ValidUrl(url)\
-            and (depth <= Config.MaxDepth or Config.MaxDepth <= 0)\
-            and (self.DocumentCount <= Config.NoOfDocToFetch or Config.NoOfDocToFetch <= 0)
+        return self.config.AllowedSchemes(parsedset.scheme)\
+            and self.robot.Allowed(url)\
+            and self.config.ValidUrl(url)\
+            and (depth <= self.config.MaxDepth or self.config.MaxDepth <= 0)\
+            and (self.DocumentCount <= self.config.NoOfDocToFetch or self.config.NoOfDocToFetch <= 0)
 
     def __IsShelveVisited(self, url):
-        return self.ShelveObj.has_key(url)
+        try:
+            return self.ShelveObj.has_key(url.encode("utf-8"))
+        except AttributeError:
+            return url in self.ShelveObj
 
     def AddToFrontier(self, url, depth):
         url = self.__CleanUrl(url)
@@ -77,14 +88,17 @@ class UrlManager:
         complete = False
         with self.ShelveLock, self.FrontierLock, self.WorkingLock, self.DoneLock:
             shelved = False
-            if Config.Resumable:
+            if self.config.Resumable:
                 if self.__IsShelveVisited(url):
                     shelved = True
             
             if not shelved and url not in self.Frontier and url not in self.Working and url not in self.Done:
                 self.Frontier.add((url, depth))
-                if Config.Resumable:
-                    self.ShelveObj[url] = (False, depth)
+                if self.config.Resumable:
+                    try:
+                        self.ShelveObj[url.encode("utf-8")] = (False, depth)
+                    except AttributeError:
+                        self.ShelveObj[url] = (False, depth)
                     self.ShelveObj.sync()
                 complete = True
 
@@ -96,7 +110,7 @@ class UrlManager:
         depth = 0
         with self.FrontierLock, self.WorkingLock:
             if len(self.Frontier) != 0:
-                url, depth = self.Frontier.pop()
+                url, depth = self.Frontier.pop(self.config.DepthFirstTraversal)
                 self.Working.add(url)
                 obtained = True
 
@@ -107,9 +121,13 @@ class UrlManager:
             self.DocumentCount += 1
             self.Working.remove(url)
             self.Done.add(url)
-            if Config.Resumable:
-                depth = self.ShelveObj[url][1]
-                self.ShelveObj[url] = (True, depth)
+            if self.config.Resumable:
+                try:
+                    depth = self.ShelveObj[url.encode("utf-8")][1]
+                    self.ShelveObj[url.encode("utf-8")] = (True, depth)
+                except AttributeError:
+                    depth = self.ShelveObj[url][1]
+                    self.ShelveObj[url] = (True, depth)
                 self.ShelveObj.sync()
 
 
@@ -118,9 +136,9 @@ class UrlManager:
 
     def GetOutput(self):
         try:
-            return (True, self.Output.get(True, Config.OutBufferTimeOut))
+            return (True, self.Output.get(True, self.config.OutBufferTimeOut))
         except Empty:
-            print ("No value in Output buffer for " + str(Config.OutBufferTimeOut) + " secs, dumping working set")
+            print ("No value in Output buffer for " + str(self.config.OutBufferTimeOut) + " secs, dumping working set")
             print (self.Working)
             return (False,)
         
