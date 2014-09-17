@@ -100,8 +100,8 @@ class Config:
     def GetTextData(self, htmlData):
         '''Function to clean up html raw data and get the text from it. Keep it small.
         Not thread safe, returns an object that will go into the parsedData["text"] field for HandleData function above'''
-        import nltk
-        return nltk.clean_html(htmlData)
+        from lxml import html
+        return html.fromstring(htmlData).text_content()
 
     def ExtractNextLinks(self, url, rawData, outputLinks):
         '''Function to extract the next links to iterate over. No need to validate the links. They get validated at the ValudUrl function when added to the frontier
