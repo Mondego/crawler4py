@@ -4,10 +4,10 @@ A web crawler in Python
 
 Dependency List
 ==========
-1. NLTK : http://www.nltk.org/install.html : html clean up (Can remove in Config)
-2. Lxml : https://pypi.python.org/pypi/lxml : html document parsing (Can remove in Config)
-3. Python 2.6+ (The above dependencies work on this version of python.
-               You can try it on Python 3 too if you do not use the above dependencies. Tested)
+1. Lxml : https://pypi.python.org/pypi/lxml : html document parsing (Can remove in Config)
+2. Python 2.6+ (The above dependency works on this version of python.
+               You can try it on Python 3 too if you do not use the above dependency. Py3 has been Tested
+               Note that there is a published version of lxml for Py 3.2 as of 9/16/2014.)
 
 
 Config Variables
@@ -91,7 +91,7 @@ GetAuthenticationData [
 What to write
 ==========
 1. Make a config file say MyCrawlerConfig.py at the same level as the Crawler4py folder (Not in that folder)
-2. In that file Inherit from Crawler4py.Config.
+2. In that file make a class that inherits from Crawler4py.Config.
 3. In the constructor define at least UserAgentString. You can set more of the above attributes here
 4. define at least 2 functions: GetSeeds, HandleData. You can override more of the above functions here
 5. In your main python file. from <Filename> import <Config Class name>
