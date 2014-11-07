@@ -10,10 +10,10 @@ class Config:
 
     def __init__(self):
         #Number of Url Data Fetching Threads Allowed
-        self.MaxWorkerThreads = 8
+        self.MaxWorkerThreads = 2
 
         #Timeout(Seconds) for trying to get the next url from the frontier. 
-        self.FrontierTimeOut = 60
+        self.FrontierTimeOut = 10
 
         #Timeout(Seconds) for trying to get a free worker thread, (worker is taking too long maybe?)
         self.WorkerTimeOut = 60
@@ -25,10 +25,10 @@ class Config:
         self.UrlFetchTimeOut = 2
 
         #The User Agent String that this crawler is going to identify itself as. http://tools.ietf.org/html/rfc2616#section-14.43
-        self.__UserAgentString = None
+        self.__UserAgentString = "INF221 - Class project - Privacy"
 
         #To allow resume of fetching from last point of closure. Set to False to always restart from seed set of urls.
-        self.Resumable = True
+        self.Resumable = False
 
         #Number of times to retry fetching a url if it fails
         self.MaxRetryDownloadOnFail = 5
@@ -40,10 +40,10 @@ class Config:
         self.PersistentFile = "Persistent.shelve"
 
         #Total (Approximate) documents to fetch before stopping
-        self.NoOfDocToFetch = -1
+        self.NoOfDocToFetch = 100
 
         #The Max Depth of the page to go to while fetching (depth = distance of first discovery from seed urls)
-        self.MaxDepth = -1
+        self.MaxDepth = 5
 
         #Max size of page in bytes that is allowed to be fetched. (Only works for websites that send Content-Length in response header)
         self.MaxPageSize = 1048576
@@ -53,13 +53,16 @@ class Config:
         #Set to 0 if you want unlimited size
         #Advantages of setting > 0: Fetch url waits for the buffer to become free when its full. If crawler crashes max of this size output is lost.
         #Disadvantage of setting > 0: Slows down the crawling.
-        self.MaxQueueSize = 0
+        self.MaxQueueSize = 10
 
         #This ignores the rules at robot.txt. Be very careful with this. Only make it True with permission of the host/API pulling that does not need robot rules.
         self.IgnoreRobotRule = False
 
         #This sets the mode of traversal: False -> Breadth First, True -> Depth First.
         self.DepthFirstTraversal = False
+        
+        #This tells the cralwer to remove the Javascript and CSS data from an html document before stripping the tags off.
+        self.RemoveJavaScriptAndCSS = False
 
     def ValidateConfig(self):
         '''Validates the config to see if everything is in order. No need to extend this'''
@@ -78,7 +81,7 @@ class Config:
     @abstractmethod
     def GetSeeds(self):
         '''Returns the first set of urls to start crawling from'''
-        return ["Sample Url 1", "Sample Url 2", "Etc"]
+        return ["http://neerajkumar.net/about", "http://geeksforgeeks.org"]
 
     @abstractmethod
     def HandleData(self, parsedData):
@@ -101,6 +104,15 @@ class Config:
         '''Function to clean up html raw data and get the text from it. Keep it small.
         Not thread safe, returns an object that will go into the parsedData["text"] field for HandleData function above'''
         from lxml import html
+        if ( self.RemoveJavaScriptAndCSS ):
+          try:
+            from lxml.html.clean import Cleaner
+            cleaner = Cleaner()
+            cleaner.javascript = True
+            cleaner.style = True
+            htmlData = cleaner.clean_html(htmlData)
+          except:
+            print("Could not remove style and js code")
         return html.fromstring(htmlData).text_content()
 
     def ExtractNextLinks(self, url, rawData, outputLinks):
