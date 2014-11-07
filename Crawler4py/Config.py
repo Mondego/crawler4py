@@ -60,6 +60,9 @@ class Config:
 
         #This sets the mode of traversal: False -> Breadth First, True -> Depth First.
         self.DepthFirstTraversal = False
+        
+        #This option if set removes the JS and CSS content from the page before any extraction
+        self.RemoveJavaScriptAndCSS = True
 
     def ValidateConfig(self):
         '''Validates the config to see if everything is in order. No need to extend this'''
