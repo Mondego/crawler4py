@@ -100,11 +100,11 @@ class Config:
         '''Function to determine if the url is a valid url that should be fetched or not.'''
         return True
         
-    def GetTextData(self, htmlData):
+    def GetTextData(self, htmlData, forUrl='<Mising URL info>'):
         '''Function to clean up html raw data and get the text from it. Keep it small.
         Not thread safe, returns an object that will go into the parsedData["text"] field for HandleData function above'''
         from lxml import html
-        if ( self.RemoveJavaScriptAndCSS ):
+        if self.RemoveJavaScriptAndCSS:
           try:
             from lxml.html.clean import Cleaner
             cleaner = Cleaner()
@@ -112,7 +112,7 @@ class Config:
             cleaner.style = True
             htmlData = cleaner.clean_html(htmlData)
           except:
-            print("Could not remove style and js code")
+            print("Could not remove style and js code for url :" + forUrl)
         return html.fromstring(htmlData).text_content()
 
     def ExtractNextLinks(self, url, rawData, outputLinks):

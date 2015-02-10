@@ -47,7 +47,9 @@ MaxQueueSize : Max size of output queue. If the HandleData function is slow, the
 
 IgnoreRobotRule : This ignores the rules at robot.txt. Be very careful with this. Only make it True with permission of the host/API pulling that does not need robot rules.
 
-self.DepthFirstTraversal : This sets the mode of traversal: False -> Breadth First, True -> Depth First.
+DepthFirstTraversal : This sets the mode of traversal: False -> Breadth First, True -> Depth First.
+
+RemoveJavaScriptAndCSS: If set to True, this removes all the Javascript and CSS inside the HTML page while the crawler is creating the corpus. This is used in the base implementation of GetTextData so if you override the function, this functionality might not work correctly. 
 
 Config Functions
 ==========
