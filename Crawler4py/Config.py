@@ -60,6 +60,9 @@ class Config:
 
         #This sets the mode of traversal: False -> Breadth First, True -> Depth First.
         self.DepthFirstTraversal = False
+        
+        #This option if set removes the JS and CSS content from the page before any extraction
+        self.RemoveJavaScriptAndCSS = True
 
     def ValidateConfig(self):
         '''Validates the config to see if everything is in order. No need to extend this'''
@@ -97,10 +100,19 @@ class Config:
         '''Function to determine if the url is a valid url that should be fetched or not.'''
         return True
         
-    def GetTextData(self, htmlData):
+    def GetTextData(self, htmlData, forUrl='<Mising URL info>'):
         '''Function to clean up html raw data and get the text from it. Keep it small.
         Not thread safe, returns an object that will go into the parsedData["text"] field for HandleData function above'''
         from lxml import html
+        if self.RemoveJavaScriptAndCSS:
+          try:
+            from lxml.html.clean import Cleaner
+            cleaner = Cleaner()
+            cleaner.javascript = True
+            cleaner.style = True
+            htmlData = cleaner.clean_html(htmlData)
+          except:
+            print("Could not remove style and js code for url :" + forUrl)
         return html.fromstring(htmlData).text_content()
 
     def ExtractNextLinks(self, url, rawData, outputLinks):

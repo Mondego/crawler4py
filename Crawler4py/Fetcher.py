@@ -55,7 +55,7 @@ class Fetcher:
             return self.FetchUrl(url, depth, urlManager, retry + 1)
     
     def __ProcessUrlData(self, url, htmlData, depth, urlManager):
-        textData = self.config.GetTextData(htmlData)
+        textData = self.config.GetTextData(htmlData, forUrl=url)
         links = []
         if (self.config.ExtractNextLinks(url, htmlData, links)):
             urlManager.AddOutput({"html": htmlData, "text": textData, "url": url})
