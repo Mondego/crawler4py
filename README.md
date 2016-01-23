@@ -5,7 +5,7 @@ A web crawler in Python
 Dependency List
 ==========
 1. Lxml : https://pypi.python.org/pypi/lxml : html document parsing (Can remove in Config)
-2. Python 2.6+ (The above dependency works on this version of python.
+2. Python 2.7+ (The above dependency works on this version of python.
                You can try it on Python 3 too if you do not use the above dependency. Py3 has been Tested
                Note that there is a published version of lxml for Py 3.2 as of 9/16/2014.)
 
