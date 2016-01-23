@@ -100,3 +100,8 @@ What to write
 6. from Crawler4py.Crawler import Crawler
 7. crawler = Crawler(<Config Class Name>())
 8. crawler.StartCrawling()
+
+Troubleshooting
+==========
+1. To restart the crawler from the start and resumable is true, delete the Persistent.shelve file in the folder.
+2. If the crawler starts using a lot of memory, and/or the crawler slows down or stops after many crawls, set the config parameter MaxQueueSize to a value like 100 or 200.
