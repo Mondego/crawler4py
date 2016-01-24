@@ -86,21 +86,24 @@ class UrlManager:
             return False
 
         complete = False
-        with self.ShelveLock, self.FrontierLock, self.WorkingLock, self.DoneLock:
-            shelved = False
-            if self.config.Resumable:
-                if self.__IsShelveVisited(url):
-                    shelved = True
-            
-            if not shelved and url not in self.Frontier and url not in self.Working and url not in self.Done:
-                self.Frontier.add((url, depth))
-                if self.config.Resumable:
-                    try:
-                        self.ShelveObj[url.encode("utf-8")] = (False, depth)
-                    except AttributeError:
-                        self.ShelveObj[url] = (False, depth)
-                    self.ShelveObj.sync()
-                complete = True
+        with self.ShelveLock:
+            with self.FrontierLock:
+                with self.WorkingLock:
+                    with self.DoneLock:
+                        shelved = False
+                        if self.config.Resumable:
+                            if self.__IsShelveVisited(url):
+                                shelved = True
+                        
+                        if not shelved and url not in self.Frontier and url not in self.Working and url not in self.Done:
+                            self.Frontier.add((url, depth))
+                            if self.config.Resumable:
+                                try:
+                                    self.ShelveObj[url.encode("utf-8")] = (False, depth)
+                                except AttributeError:
+                                    self.ShelveObj[url] = (False, depth)
+                                self.ShelveObj.sync()
+                            complete = True
 
         return complete
 
