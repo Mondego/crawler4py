@@ -111,27 +111,30 @@ class UrlManager:
         obtained = False
         url = ""
         depth = 0
-        with self.FrontierLock, self.WorkingLock:
-            if len(self.Frontier) != 0:
-                url, depth = self.Frontier.pop(self.config.DepthFirstTraversal)
-                self.Working.add(url)
-                obtained = True
+        with self.FrontierLock:
+            with self.WorkingLock:
+                if len(self.Frontier) != 0:
+                    url, depth = self.Frontier.pop(self.config.DepthFirstTraversal)
+                    self.Working.add(url)
+                    obtained = True
 
         return obtained, url, depth
 
     def MarkUrlAsDone(self, url):
-        with self.ShelveLock, self.WorkingLock, self.DoneLock:
-            self.DocumentCount += 1
-            self.Working.remove(url)
-            self.Done.add(url)
-            if self.config.Resumable:
-                try:
-                    depth = self.ShelveObj[url.encode("utf-8")][1]
-                    self.ShelveObj[url.encode("utf-8")] = (True, depth)
-                except AttributeError:
-                    depth = self.ShelveObj[url][1]
-                    self.ShelveObj[url] = (True, depth)
-                self.ShelveObj.sync()
+        with self.ShelveLock:
+            with self.WorkingLock:
+                with self.DoneLock:
+                    self.DocumentCount += 1
+                    self.Working.remove(url)
+                    self.Done.add(url)
+                    if self.config.Resumable:
+                        try:
+                            depth = self.ShelveObj[url.encode("utf-8")][1]
+                            self.ShelveObj[url.encode("utf-8")] = (True, depth)
+                        except AttributeError:
+                            depth = self.ShelveObj[url][1]
+                            self.ShelveObj[url] = (True, depth)
+                        self.ShelveObj.sync()
 
 
     def AddOutput(self, data):
