@@ -1,4 +1,4 @@
-'''
+﻿'''
 @Author: Rohan Achar ra.rohan@gmail.com
 '''
 
@@ -14,13 +14,13 @@ except ImportError:
 from threading import Lock
 
 from Crawler4py import Robot
-from Crawler4py.OrderedSet import OrderedSet
+from Crawler4py.OrderedSet import OrderedSetForFrontier
 
 class UrlManager:
     def __init__(self, config):
         self.config = config
         self.robot = Robot.Robot(self.config)
-        self.Frontier = OrderedSet()
+        self.Frontier = OrderedSetForFrontier()
         self.Working = set()
         self.Done = set()
         self.Output = Queue(self.config.MaxQueueSize)
@@ -95,7 +95,7 @@ class UrlManager:
                             if self.__IsShelveVisited(url):
                                 shelved = True
                         
-                        if not shelved and url not in self.Frontier and url not in self.Working and url not in self.Done:
+                        if not shelved and not self.Frontier.contains_url(url) and url not in self.Working and url not in self.Done:
                             self.Frontier.add((url, depth))
                             if self.config.Resumable:
                                 try:

@@ -1,4 +1,4 @@
-'''
+﻿'''
 @Author: Raymond Hettiger, and released under the MIT license
 @Source: http://code.activestate.com/recipes/576694/ 
 '''
@@ -62,3 +62,36 @@ class OrderedSet(collections.MutableSet):
         if isinstance(other, OrderedSet):
             return len(self) == len(other) and list(self) == list(other)
         return set(self) == set(other)
+
+
+class OrderedSetForFrontier(OrderedSet):
+    def __init__(self, iterable = None):
+        self._keyParts = set()
+        return super(OrderedSetForFrontier, self).__init__(iterable)
+
+    def add(self, key):
+        super(OrderedSetForFrontier, self).add(key)
+        try: 
+            self._keyParts.add(key[0])
+        except:
+            "No keypart tuple"
+
+    def pop(self, last = True):
+        popped = super(OrderedSetForFrontier, self).pop(last)
+        try: 
+            self._keyParts.remove(popped[0])
+        except:
+            "No keypart tuple to worry about"
+        return popped
+
+    def discard(self, key):
+        super(OrderedSetForFrontier, self).discard(key)
+        try: 
+            self._keyParts.remove(key[0])
+        except:
+            "No keypart tuple to worry about"
+
+    def contains_url(self, url):
+        return url in self._keyParts
+
+

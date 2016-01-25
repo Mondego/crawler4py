@@ -1,6 +1,15 @@
 #############################
 crawler4py
 
+ENTRY 4
+* Fixed a bug in AddToFrontier where duplicate urls at different depths were being accepted into the Frontier. Bug found by Rimoun Ghaly
+* Tested on py2.6, py2.7, py3.5
+
+--Rohan Achar - Jan 25t, 2016 - 12:08AM
+
+#############################
+crawler4py
+
 ENTRY 3
 
 * Made project into a package and Config an abstract class.
