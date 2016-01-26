@@ -42,7 +42,7 @@ class Crawler:
                 workerThread = Thread(target = self.__StartWorker, args = (workerTry[1], urlTry[1], urlTry[2]))
                 self.workersDict[workerTry[1]] = workerThread
                 workerThread.start()
-                time.sleep(self.config.PolitenessDelay/1000)
+                time.sleep(float(self.config.PolitenessDelay)/1000)
                 workerTry = self.__GetFreeWorker()
 
             print ("Waiting for Output buffer to clear")
