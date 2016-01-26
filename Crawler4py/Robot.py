@@ -26,6 +26,7 @@ class Robot:
         except ValueError:
             print ("ValueError: " + url)
 
+        roboturl = ""
         try:
             roboturl = parsed.scheme + "://" + parsed.hostname + port + "/robots.txt"
         except TypeError:
