@@ -113,7 +113,12 @@ class Config:
             htmlData = cleaner.clean_html(htmlData)
           except:
             print("Could not remove style and js code for url :" + forUrl)
-        return html.fromstring(htmlData).text_content()
+        try:
+            return html.fromstring(htmlData).text_content()
+        except Exception as e:
+            # Can throw ParserError and maybe others... don't halt the thread
+            print("Could not extract text content for url : "+ forUrl)
+            return ""
 
     def ExtractNextLinks(self, url, rawData, outputLinks):
         '''Function to extract the next links to iterate over. No need to validate the links. They get validated at the ValudUrl function when added to the frontier
