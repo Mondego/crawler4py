@@ -67,7 +67,7 @@ class Config:
     def ValidateConfig(self):
         '''Validates the config to see if everything is in order. No need to extend this'''
         try:
-            assert (self.UserAgentString != "" or self.UserAgentString != "Set This Value!")
+            assert (self.UserAgentString != "" and self.UserAgentString != "Set This Value!")
         except AssertionError:
             print ("Set value of UserAgentString")
             sys.exit(1)
