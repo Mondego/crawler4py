@@ -53,6 +53,10 @@ class Fetcher:
                 return False
             print ("Retrying " + url + " " + str(retry + 1) + " time")
             return self.FetchUrl(url, depth, urlManager, retry + 1)
+        except Exception as e:
+            # Can throw unicode errors and others... don't halt the thread
+            return False
+
     
     def __ProcessUrlData(self, url, htmlData, depth, urlManager):
         textData = self.config.GetTextData(htmlData, forUrl=url)
