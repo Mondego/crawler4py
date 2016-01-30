@@ -36,8 +36,11 @@ class Config:
         #PolitenessDelay that the crawler is forced to adhere to. http://en.wikipedia.org/wiki/Web_crawler#Politeness_policy
         self.PolitenessDelay = 300
 
-        #The Persistent File to store current state of crawler for resuming (if Resumable is True)
+        #The Persistent File to store current state of crawler for resuming (if Resumable is True and PersistenceObject is None)
         self.PersistentFile = "Persistent.shelve"
+
+        # Users may want to use their own persistence object.
+        self.PersistenceObject = None
 
         #Total (Approximate) documents to fetch before stopping
         self.NoOfDocToFetch = -1

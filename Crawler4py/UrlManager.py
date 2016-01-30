@@ -36,22 +36,28 @@ class UrlManager:
     def __Init(self):
         self.ShelveObj = None
         if self.config.Resumable:
-            if (os.access(self.config.PersistentFile, os.F_OK)):
-                self.ShelveObj = shelve.open(self.config.PersistentFile)
-                keys = self.ShelveObj.keys()
-                if len(keys) > 0:
-                    for key in keys:
-                        if not self.ShelveObj[key][0]:
-                            self.Frontier.add((key.decode("utf-8"), self.ShelveObj[key][1]))
-                    return
+            if self.config.PersistenceObject != None:
+                self.ShelveObj = self.config.PersistenceObject
+                self.__Resume()
+            else:
+                if (os.access(self.config.PersistentFile, os.F_OK)):
+                    self.ShelveObj = shelve.open(self.config.PersistentFile)
+                    self.__Resume()
 
-            self.ShelveObj = shelve.open(self.config.PersistentFile)
+                self.ShelveObj = shelve.open(self.config.PersistentFile)
 
         for url in self.config.GetSeeds():
             self.AddToFrontier(url, 0)
         
         return
 
+    def __Resume(self):
+        keys = self.ShelveObj.keys()
+        if len(keys) > 0:
+            for key in keys:
+                if not self.ShelveObj[key][0]:
+                    self.Frontier.add((key.decode("utf-8"), self.ShelveObj[key][1]))
+            return
 
     def __CleanUrl(self, url):
         parsedset = urlparse.urlparse(url)
