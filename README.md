@@ -31,7 +31,9 @@ MaxRetryDownloadOnFail : Number of times to retry fetching a url if it fails
 
 PolitenessDelay : PolitenessDelay that the crawler is forced to adhere to. http://en.wikipedia.org/wiki/Web_crawler#Politeness_policy
 
-PersistentFile : The Persistent File to store current state of crawler for resuming (if Resumable is True)
+PersistentFile : The Persistent File to store current state of crawler for resuming (if Resumable is True and PersistenceObject is None)
+
+PersistenceObject : Defaults to None, can be set to some object you provide (e.g. to use a network resource such as Redis instead of local disk) [postgres example](https://gist.github.com/kfatehi/90e27415e15eaeb19f7b)
 
 NoOfDocToFetch : Total (Approximate) documents to fetch before stopping
 
