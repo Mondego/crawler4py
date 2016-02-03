@@ -120,7 +120,7 @@ class Config:
             return html.fromstring(htmlData).text_content()
         except Exception as e:
             # Can throw ParserError and maybe others... don't halt the thread
-            print("Could not extract text content for url : "+ forUrl)
+            print(type(e).__name__  + ": Could not extract text content for url : "+ forUrl)
             return ""
 
     def ExtractNextLinks(self, url, rawData, outputLinks):
@@ -135,8 +135,10 @@ class Config:
             htmlParse = html.document_fromstring(rawData)
             htmlParse.make_links_absolute(url)
         except etree.ParserError:
+            print("ParserError: Could not extract the links from the url")
             return False
         except etree.XMLSyntaxError:
+            print("XMLError: Could not extract the links from the url")
             return False
     
         for element, attribute, link, pos in htmlParse.iterlinks():
