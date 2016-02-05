@@ -56,7 +56,8 @@ class UrlManager:
         if len(keys) > 0:
             for key in keys:
                 if not self.ShelveObj[key][0]:
-                    self.Frontier.add((key.decode("utf-8"), self.ShelveObj[key][1]))
+                    if self.__Valid(key.decode("utf-8"), self.ShelveObj[key][1]):
+                        self.Frontier.add((key.decode("utf-8"), self.ShelveObj[key][1]))
             return
 
     def __CleanUrl(self, url):

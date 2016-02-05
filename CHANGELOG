@@ -1,6 +1,15 @@
 #############################
 crawler4py
 
+ENTRY 5
+* Fixed a bug in Frontier Add on resume to check if the urls are valid again.
+
+--Rohan Achar - Feb 4th, 2016 - 9:15PM
+
+
+#############################
+crawler4py
+
 ENTRY 4
 * Fixed a bug in AddToFrontier where duplicate urls at different depths were being accepted into the Frontier. Bug found by Rimoun Ghaly
 * Tested on py2.6, py2.7, py3.5
