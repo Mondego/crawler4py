@@ -62,13 +62,14 @@ class Fetcher:
     def __ProcessUrlData(self, url, htmlData, depth, urlManager):
         '''
         Function to extract information from the URL. 
-        The text data is added to the output buffer. The url's found on the page are sent to the Frontier addition. 
-        If the link extraction fails then data is not added to the output buffer thereby initiating the OutBufferTimeOut.
+        The text data, html data and url are added to the output buffer. The url's found on the page are sent to the Frontier addition. 
         '''
         textData = self.config.GetTextData(htmlData, forUrl=url)
+        # Sending the relevant information to the output writing function
+        urlManager.AddOutput({"html": htmlData, "text": textData, "url": url})
+
         links = []
         if (self.config.ExtractNextLinks(url, htmlData, links)):
-            urlManager.AddOutput({"html": htmlData, "text": textData, "url": url})
             for link in links:
                 urlManager.AddToFrontier(link, depth + 1)
             return True
