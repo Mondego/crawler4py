@@ -55,14 +55,21 @@ class Fetcher:
             return self.FetchUrl(url, depth, urlManager, retry + 1)
         except Exception as e:
             # Can throw unicode errors and others... don't halt the thread
+            print(type(e).__name__ + " occurred during URL Fetching.")
             return False
 
     
     def __ProcessUrlData(self, url, htmlData, depth, urlManager):
+        '''
+        Function to extract information from the URL. 
+        The text data, html data and url are added to the output buffer. The url's found on the page are sent to the Frontier addition. 
+        '''
         textData = self.config.GetTextData(htmlData, forUrl=url)
+        # Sending the relevant information to the output writing function
+        urlManager.AddOutput({"html": htmlData, "text": textData, "url": url})
+
         links = []
         if (self.config.ExtractNextLinks(url, htmlData, links)):
-            urlManager.AddOutput({"html": htmlData, "text": textData, "url": url})
             for link in links:
                 urlManager.AddToFrontier(link, depth + 1)
             return True
